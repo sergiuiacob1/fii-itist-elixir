@@ -2,10 +2,7 @@
 
 defmodule Guess do
   def guess(number) do
-
   end
-
 end
-
 
 :rand.uniform(10) |> Guess.guess
