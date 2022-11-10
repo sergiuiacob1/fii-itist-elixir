@@ -1,8 +1,6 @@
 defmodule Fibonacci do
   def sequence(0), do: []
-  def sequence(1), do: [0]
-  def sequence(2), do: [1, 0]
-  def sequence(n), do: sequence([1, 0], n-1)
+  def sequence(n), do: sequence([0, 1], n-1)
   def sequence(list, n), do: list
 end
 
