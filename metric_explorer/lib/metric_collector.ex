@@ -8,8 +8,6 @@ defmodule MetricCollector do
   # these methods can be called by outside modules
 
   def start_link(_opts) do
-    IO.inspect("am ajuns aici")
-
     # called by the supervisor in order to start the GenServer
 
     # let's construct the GenServer state here:
