@@ -12,7 +12,9 @@ Install Elixir: https://elixir-lang.org/install.html
 2. Run `elixir hello_elixir.exs` outside of `iex`
 
 ## Resources
-Official documentation: https://elixir-lang.org/docs.html
+Official documentation: https://elixir-lang.org/docs.html </br>
+Getting started guide: https://elixir-lang.org/getting-started/introduction.html </br>
+Learn Elixir concepts by solving exercises: https://exercism.org/tracks/elixir/concepts
 
 ## Contact
 [Lucian Bosînceanu](mailto:lucian@shoreline.io)
