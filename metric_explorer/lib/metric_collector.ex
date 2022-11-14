@@ -18,12 +18,18 @@ defmodule MetricCollector do
       # the value is a list of tuples containing:
         # 1. The name of the collected metric
         # 2. A function to extract the value of that metric
-    state = %{}
+    state = %{
+      "available_metrics" => [
+        {:cpu_usage, &MetricCollector.get_cpu_usage/0},
+        {:memory_usage, &MetricCollector.get_memory_usage/0},
+        {:disk_usage, &MetricCollector.get_disk_usage/0}
+      ]
+    }
 
     GenServer.start_link(__MODULE__, state)
   end
 
-  def get_metric_data(_metric, _start_time, _end_time) do
+  def get_metric_data(metric, start_time, end_time) do
     # Let's use this function to get metric data from a specified time interval;
     # Use :ets.tab2list(metric) to get a list with all the entries from a specified metric table;
     # Filter the entries and select only the ones with their timestamp between start_time and end_time
@@ -34,7 +40,18 @@ defmodule MetricCollector do
     # Warning: if the metric does not exist, then :ets.tab2list return an ArgumentError;
     # Use a try do / rescue / end block for error handing;
     # In the rescue block, catch ArgumentError and return a tuple with this format: {:error, error_message}
-    {:ok, []}
+
+    try do
+      data_points = metric
+      |> :ets.tab2list()
+      |> Enum.filter(fn {timestamp, _value} ->
+        start_time <= timestamp and timestamp <= end_time
+      end)
+
+      {:ok, data_points}
+    rescue
+      ArgumentError -> {:error, "Metric #{metric} not found!"}
+    end
   end
 
   # Server
@@ -54,6 +71,9 @@ defmodule MetricCollector do
       # :ets.new(metric_name, [:set, :named_table])
         # :set -> it means that each entry in the table is considered unique
         # :named_table -> further insert calls needs to know only the name of the table, not the identifier returned by :ets.new
+    Enum.each(state["available_metrics"], fn {metric_name, _} ->
+      :ets.new(metric_name, [:set, :named_table])
+    end)
 
     # Schedule the work to be performed each second
     schedule_work()
@@ -74,19 +94,23 @@ defmodule MetricCollector do
     schedule_work()
 
     # Let's collect the metrics
-    collect_metrics(state)
+    collect_metrics(state["available_metrics"])
     {:noreply, state}
   end
 
-  defp collect_metrics(_available_metrics) do
+  defp collect_metrics(available_metrics) do
     # This method will collect and persist each available metric;
 
     # First, let's store the current timestamp into a variable such that each insert is made at the same time;
     # Use :os.system_time(:second) to get the current timestamp
+    current_timestamp = :os.system_time(:second)
 
     # For Each available metric, use the collector function defined in the state to get the current value;
     # Then, use :ets.insert in order to add the data point:
       # :ets.insert(metric_name, {current_timestamp, collected_value})
+    Enum.each(available_metrics, fn {metric_name, collector_func} ->
+      :ets.insert(metric_name, {current_timestamp, collector_func.()})
+    end)
   end
 
   def get_cpu_usage do

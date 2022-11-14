@@ -7,8 +7,8 @@ defmodule MetricExplorer do
       {:ok, data_points} ->
         Enum.sort_by(data_points, fn {timestamp, _} -> timestamp end)
 
-      # {:error, error_message} ->
-      #   Logger.error("Failed to query the metric #{metric_name} in the [#{start_time}, #{end_time}] interval because of this error: #{error_message}")
+      {:error, error_message} ->
+        Logger.error("Failed to query the metric #{metric_name} in the [#{start_time}, #{end_time}] interval because of this error: #{error_message}")
     end
   end
 

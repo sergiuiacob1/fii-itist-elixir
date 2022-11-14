@@ -1,6 +1,9 @@
 ## About
 FII IT-ist Elixir workshop, November 2022.
 
+https://docs.google.com/presentation/d/1Y1r3gLl0H6uECuN51MrNSj7OXPaODWl2Or4hlHmr-SE/edit?usp=sharing
+
+
 ## Requirements
 Install Elixir: https://elixir-lang.org/install.html
 
